@@ -7,8 +7,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Period {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  password   String
+  full_name  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  races      Race[]
+  statistics Statistics[]
+}
+
+model Race {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  routeId         Int?     @unique
+  name            String
+  distance        Int      @default(0)
+  route           Route?   @relation(fields: [routeId], references: [id])
+  running_time    Int      @default(0)
+  average_cadence Int      @default(0)
+  average_pace    Float    @default(0)
+  fastest_pace    Float    @default(0)
+  slowest_pace    Float    @default(0)
+  elevation_gain  Int      @default(0)
+  elevation_loss  Int      @default(0)
+  average_hr      Int      @default(0)
+  splits          Split[]
+  date            DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Split {
+  id        Int      @id @default(autoincrement())
+  distance  Float    @default(0)
+  time      Float    @default(0)
+  raceId    Int
+  race      Race     @relation(fields: [raceId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Route {
+  id          Int      @id @default(autoincrement())
+  coordinates Json
+  raceId      Int?     @unique
+  race        Race?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Statistics {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  statistic_period Period
+  total_distance   Float    @default(0.0)
+  total_races      Int      @default(0)
+  total_time       Int      @default(0)
+  average_candence Float    @default(0.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
