@@ -52,7 +52,7 @@ model Split {
   distance  Float    @default(0)
   time      Float    @default(0)
   raceId    Int
-  race      Race     @relation(fields: [raceId], references: [id])
+  race      Race     @relation(fields: [raceId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
